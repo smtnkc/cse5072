@@ -36,7 +36,7 @@ get_df_top <- function(df, top_n) {
 }
 
 get_df_cut <- function(df, cut_k) {
-  df_cut_k <- df[df[, 1] >= cut_k, ]
+  df_cut_k <- as.data.frame(df[df[, 1] >= cut_k, , drop = FALSE])
   return (df_cut_k)
 }
 
@@ -49,17 +49,22 @@ get_deg_list <- function(df, cut_k, top_n) {
     res <- rownames(get_df_cut(df, cut_k))
   else
     res <- rownames(get_df_top(df, top_n))
-  
+
   return(res)
 }
 
 get_df_deg <- function(df, fc_list, cut_k, top_n) {
   combined_deg_list <- c()
-  for(i in 1:length(fc_list))
-    combined_deg_list <- c(combined_deg_list, get_deg_list(fc_list[[i]], cut_k, top_n))
+  for(i in 1:length(fc_list)) {
+    deg_list <- get_deg_list(fc_list[[i]], cut_k, top_n)
+    combined_deg_list <- c(combined_deg_list, deg_list)
+    cat("DEG count for state", i, "is", length(deg_list), "\n")
+  }
   
-  combined_deg_list <- unique(combined_deg_list)
-  df_deg <- as.data.frame(t(df[combined_deg_list,]))
+  unique_deg_list <- unique(combined_deg_list)
+  cat("Total DEG count is", length(combined_deg_list), "\n")
+  cat("Unique DEG count is", length(unique_deg_list), "\n")
+  df_deg <- as.data.frame(t(df[unique_deg_list,]))
   df_deg <- cbind(Group = df_states[,"Disease_State"], df_deg)
   return (df_deg)
 }

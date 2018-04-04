@@ -1,21 +1,7 @@
-# If there is any attribute which is NOT differentially
-# expressed as against the target attribute, delete that row.
-# Set related params to select a cutoff or top N DEGs.
-deg_detect <- function(df, target_index, cutoff, topN) {
+get_fc_table <- function(df, target_index) {
   
-  if(is.null(cutoff) && is.null(topN)) {
-    stop("Set either one of cutoff or topN!")
-  }
-  else {
-    if(!is.null(cutoff) && cutoff < 0)
-      stop("cutoff must be a positive integer!")
-    else if(!is.null(topN) && topN < 0)
-      stop("topN must be a positive integer!")
-  }
-  
-  df_minfc <- data.frame(MIN = numeric(nrow(df)))
-  #print(dim(df_minfc))
-  row.names(df_minfc) <- row.names(df)
+  df_fc <- data.frame(minfc = numeric(nrow(df)))
+  rownames(df_fc) <- rownames(df)
   
   if(target_index == 1)
     range <- 2:ncol(df)
@@ -25,52 +11,55 @@ deg_detect <- function(df, target_index, cutoff, topN) {
     range <- c(1:(target_index-1),(target_index+1):ncol(df))
   
   for(row in 1:nrow(df)) {
-    minfc <- 999999
-    
+    minfc <- 9999
     for(pair_index in range) {
       fc <- abs(log(df[row, target_index]/df[row, pair_index], base = 2))
-      #df_minfc[row, colnames(df)[pair_index]] <- round(fc,2)
-      
-      if(fc <= minfc) {
-        minfc = fc
-      }
+      if(fc < minfc) minfc <- fc
     }
-    
-    if(!is.null(cutoff)) {
-      if(minfc >= cutoff)
-        df_minfc[row, "MIN"] <- round(minfc,2)
-      else 
-        df_minfc[row, "MIN"] <- NA
-    }
-    else {
-      df_minfc[row, "MIN"] <- round(minfc,2)
-    }
+    df_fc[row, 1] <- round(minfc,2)
   }
-  
-  if(!is.null(cutoff)) { 
-    df_minfc <- na.omit(df_minfc)
-  }
-  else { df_minfc <- as.data.frame(head(df_minfc[order(-df_minfc$MIN), , drop = FALSE], topN)) }
-  
-  cat("DEG count for column", target_index, "=", nrow(df_minfc), "\n")
-  
-  return(df_minfc)
-}
-get_deg_list <- function(df, cutoff, topN) {
-  start_time <- Sys.time()
-  df_deg_all <- NULL
-  for(i in 1:5) {
-    if(i == 1) df_deg_all <- deg_detect(df, target_index = i, cutoff = cutoff, topN = topN)
-    else df_deg_all <- rbind(df_deg_all, deg_detect(df, target_index = i, cutoff = cutoff, topN = topN))
-  }
-  end_time <- Sys.time()
-  cat("Getting DEGS takes", end_time-start_time, "sec\n")
-  return (row.names(df_deg_all))
+  return(df_fc)
 }
 
-deg_list <- get_deg_list(df_group, cutoff = DEG_CUTOFF, topN = DEG_TOP_N)
+generate_fc_list <- function(df) {
+  fc_list <- list()
+  for(i in 1:ncol(df))
+    fc_list[[i]] <- get_fc_table(df, i)
+  return (fc_list)
+}
 
-df_deg <- as.data.frame(t(df_exp[deg_list,]))
-df_deg <- cbind(Group = df_states[,"Disease_State"], df_deg)
-#dtm4deg <- C5.0(df_deg[,-1], df_deg[,1])
-#dtm4deg; summary(dtm4deg)
+fc_list <- generate_fc_list(df_group) # Generates FC values for only once
+
+get_df_top <- function(df, top_n) {
+  df_top_n <- as.data.frame(head(df[order(-df[,1]), , drop = FALSE], top_n))
+  return (df_top_n)
+}
+
+get_df_cut <- function(df, cut_k) {
+  df_cut_k <- df[df[, 1] >= cut_k, ]
+  return (df_cut_k)
+}
+
+get_deg_list <- function(df, cut_k, top_n) {
+
+  if(is.null(cut_k) && is.null(top_n))
+    stop("You must set either one of k or n value!")
+
+  if(!is.null(cut_k))
+    res <- rownames(get_df_cut(df, cut_k))
+  else
+    res <- rownames(get_df_top(df, top_n))
+  
+  return(res)
+}
+
+get_df_deg <- function(df, fc_list, cut_k, top_n) {
+  combined_deg_list <- c()
+  for(i in 1:length(fc_list))
+    combined_deg_list <- c(combined_deg_list, get_deg_list(fc_list[[i]], cut_k, top_n))
+  
+  combined_deg_list <- unique(combined_deg_list)
+  df_deg <- as.data.frame(t(df[combined_deg_list,]))
+  df_deg <- cbind(Group = df_states[,"Disease_State"], df_deg)
+  return (df_deg)
+}

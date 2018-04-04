@@ -5,6 +5,7 @@ df_platform  <- as.data.frame(read_csv("data/GPL10775.csv", col_names = TRUE)) #
 df_platform <- df_platform[, c("ID", "Symbol v12")] # remove unnecessary columns
 df_exp <- df_exp[, -1] # remove id_ref column
 df_exp <- cbind("Symbol v12" = df_platform[, "Symbol v12"], df_exp) # add the symbols column
+#df_exp <- cbind("Symbol v12" = sprintf("`%s`", df_platform[, "Symbol v12"]), df_exp)
 
 # CONVERT EACH INVALID VALUE TO NA:
 for(row in 1:nrow(df_exp)) {
@@ -34,7 +35,4 @@ df_group <- round(df_group, 2)
 row.names(df_group) <- symbols
 
 df_all <- as.data.frame(t(df_exp))
-colnames(df_all) <- sprintf("`%s`", symbols)
 df_all <- cbind(Group = df_states[,"Disease_State"], df_all)
-#dtm4all <- C5.0(df_all[,-1], df_all[,1])
-#dtm4all; summary(dtm4all)

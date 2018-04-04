@@ -1,35 +1,37 @@
 library(readr)
 library(rstudioapi)
 library(C50)
+library(e1071)
 rm(list=ls())
 setwd(dirname(getSourceEditorContext()$path))
-
-DEG_CUTOFF  <- NULL  # 2^n times over expressed
-DEG_TOP_N   <- 10
-
 source("preprocess.R")
 source("deg_detect.R")
 
+###########################
+
+df_deg <- get_df_deg(df_exp, fc_list, cut_k = 3, top_n = NULL)
+df_deg <- get_df_deg(df_exp, fc_list, cut_k = NULL, top_n = 20)
+
 # TRAIN VS TEST
-tt <- function(df, print_table, seed_val) {
+tt <- function(df, print_table, seed_val, tool) {
   set.seed(seed_val) # Change seed to differentiate the samples
   
-  s <- sample(nrow(df), 0.8*nrow(df))
-  df_trans_train <- df[s,]; 
-  df_trans_test <- df[-s,]
-  dim(df_trans_train); dim(df_trans_test)
-  model <- C5.0(df_trans_train[, -1], df_trans_train[, 1])
+  s <- sample(nrow(df), 0.7*nrow(df))
+  df_train <- df[s,]; 
+  df_test <- df[-s,]
+  if(tool == "c50") model <- C5.0(df_train[, -1], df_train[, 1])
+  else if(tool == "svm") model <- svm(df_train$Group~., df_train)
   
+  if(print_table) { print(model); print(summary(model)) }
   
-  trainPred <- predict(model, df_trans_train[, -1])
-  tab_train <- table(trainPred, df_trans_train[,1])
+  trainPred <- predict(model, df_train[, -1])
+  tab_train <- table(trainPred, df_train[,1])
   if(print_table) print(tab_train)
   train_res <- round(sum(diag(tab_train))/sum(tab_train)*100,2)
   if(print_table) cat("Success on train set: ", train_res, "%\n")
   
-  
-  testPred <- predict(model, df_trans_test[, -1])
-  tab_test <- table(testPred, df_trans_test[,1])
+  testPred <- predict(model, df_test[, -1])
+  tab_test <- table(testPred, df_test[,1])
   if(print_table) print(tab_test)
   test_res <- round(sum(diag(tab_test))/sum(tab_test)*100,2)
   if(print_table) cat("Success on test set: ", test_res, "%\n")
@@ -37,14 +39,14 @@ tt <- function(df, print_table, seed_val) {
   res <- c(train_res, test_res)
   return(res)
 }
-tt_runner <- tt_runner <- function(df, print_table, seed_begin, nTimes) {
+tt_runner <- tt_runner <- function(df, print_table, seed_begin, nTimes, tool) {
   train_sum <- 0
   test_sum <- 0
   time <- 0
   
   for(i in c(seed_begin:(seed_begin+nTimes-1))) {
     start_time <- Sys.time()
-    res <- tt(df, print_table = print_table, i)
+    res <- tt(df, print_table = print_table, i, tool)
     end_time <- Sys.time()
     time_diff <- end_time-start_time
     time <- time + time_diff
@@ -61,7 +63,11 @@ tt_runner <- tt_runner <- function(df, print_table, seed_begin, nTimes) {
       "\tTest Avg:", test_sum/nTimes, 
       "\tTotal Time:", time, "\n")
 }
-tt_runner(df_deg, print_table = FALSE, seed_begin = 700, nTimes = 100)
+
+tt_runner(df_deg, print_table = FALSE, seed_begin = 2000, nTimes = 100, tool = "svm")
+tt_runner(df_deg, print_table = FALSE, seed_begin = 2000, nTimes = 100, tool = "c50")
+
+tt_runner(df_all, print_table = FALSE, seed_begin = 5000, nTimes = 1, tool = "c50")
 
 # ALL VS DEG RUNNER
 comparative_runner <- function(df1, df2, print_table, nTimes) {
@@ -108,6 +114,6 @@ comparative_runner <- function(df1, df2, print_table, nTimes) {
       "\tTest:", test_sum2/nTimes, 
       "\tTotal Time:", time2, "\n")
 }
-comparative_runner(df_trans, df_trans_deg, print_table = FALSE, 10)
+comparative_runner(df_all, df_deg, print_table = FALSE, 10)
 
 # source("simplify_df.R")

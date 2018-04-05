@@ -28,8 +28,6 @@ GetListFc <- function(df) {
   return (list.fc)
 }
 
-list.fc <- GetListFc(df.grouped) # Generates FC values for only once
-
 GetDfByTop <- function(df, top) {
   df.top <- as.data.frame(head(df[order(-df[,1]), , drop = FALSE], top))
   return (df.top)
@@ -61,13 +59,13 @@ GetDfDeg <- function(df, list.fc, cut, top, verbose) {
     v.deg.names <- GetDegNames(list.fc[[i]], cut, top)
     v.combined.deg.names <- c(v.combined.deg.names, v.deg.names)
     
-    if(verbose > 2) 
+    if(verbose > 1) 
       cat("DEG count for state", i, "is", length(v.deg.names), "\n")
   }
   
   v.unique.deg.names <- unique(v.combined.deg.names)
   
-  if(verbose > 2) {
+  if(verbose > 1) {
     cat("Total DEG count is", length(v.combined.deg.names), "\n")
     cat("Unique DEG count is", length(v.unique.deg.names), "\n")
   }

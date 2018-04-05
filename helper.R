@@ -36,7 +36,8 @@ SuccessFinder <- function(df, fc.list, type, tool) {
 }
 
 # Creates a model ...
-# Returns a simple df which includes only the genes those have been used as splitting attributes
+# Returns a simple df which includes only the genes 
+# those have been used as splitting attributes
 GetDfSplittingAttrs <- function(df, verbose) {
   
   df.deg <- df
@@ -56,8 +57,10 @@ GetDfSplittingAttrs <- function(df, verbose) {
   df.splitting.attrs <- df.imp[df.imp[,1] > 0, , drop = FALSE]
   v.splitting.attrs <- row.names(df.splitting.attrs)
   
-  if(verbose > 0) 
-    print(v.splitting.attrs)
+  if(verbose > 0) {
+    cat("Splitting Attrs:", v.splitting.attrs, "\n")
+    cat("Time (sec):", time.end - time.begin, "\n")
+  }
   
   return (df.deg[, v.splitting.attrs])
 }

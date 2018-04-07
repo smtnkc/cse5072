@@ -23,15 +23,17 @@ df.grouped <- GroupByDiseaseStates(df.exp)
 list.fc <- GetListFc(df.grouped)
 ###################################################################
 
-SuccessFinder(df.exp, list.fc, type = "CUT", tool = "c50")
+df.stats <- GetSuccessRates(df.exp, list.fc, type = "TOP", tool = "c50", seed.val = 1000)
 
-df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 120, verbose = 2)
-df.splitting.attrs <- GetDfSplittingAttrs(df.deg, verbose = 1)
-df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
+df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 20, verbose = 2)
+# df.splitting.attrs <- GetDfSplittingAttrs(df.deg, verbose = 1)
+# df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
 
-TTRunner(df = df.splitting.attrs,
-          train.perc = 0.8, 
+TTRunner(#df = df.exp.tr,
+         df = df.deg,
           tool = "c50", 
-          seed.begin = sample(1:100000, 1),
-          n.times = 5000,
-          verbose = 1)
+          seed.begin = 2000,
+          n.times = 100,
+          verbose = 2)
+
+# TT(df.deg, "c50", 6, 3)

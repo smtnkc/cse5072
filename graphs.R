@@ -37,3 +37,29 @@ ggplot(df.result.size, aes(top)) +
   theme(axis.line = element_line(color = "black"))
 
 
+
+# 23283 vs 70
+ggplot(df.result.seed.comb, aes(seed)) +
+  ggtitle("Accuracy over 24283 genes vs top 70 selected") +
+  geom_line(aes(y = train.all, color = "train.all"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = train.70, color = "train.70"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = test.all, color = "test.all"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = test.70, color = "test.70"), size = 1, show.legend=TRUE) +
+  scale_color_manual(labels=c("test.70", "test.all", "train.70", "train.all"), 
+                     values=palette[c(3,2,4,1)]) +
+  labs(color="Sample", x = "Seed", y = "Success %") +
+  theme(axis.line = element_line(color = "black"))
+
+# Only 23283
+ggplot(df.result.seed.comb, aes(seed)) +
+  ggtitle("Accuracy over 24283 genes (without DegDetect)") +
+  geom_line(aes(y = train.all, color = "train.all"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = test.all, color = "test.all"), size = 1, show.legend=TRUE) +
+  scale_color_manual(labels=c("test.all", "train.all"), values=palette[c(2,1)]) +
+  labs(color="Sample", x = "Seed", y = "Success %") +
+  theme(axis.line = element_line(color = "black"))
+
+
+
+
+

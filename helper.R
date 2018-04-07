@@ -150,14 +150,14 @@ GetSizeSuccess <- function(df, list.fc, tool, type, seed.begin, n.times, range, 
 GetSeedSuccess <- function(df, list.fc, n.times, tool, seeds, cut, top, verbose) {
 
   df.stats <- data.frame(top = integer(length(seeds)),
-                         nattr = integer(length(seeds)),
+                         degs = integer(length(seeds)),
                          seed = integer(length(seeds)),
                          train = numeric(length(seeds)),
                          test = numeric(length(seeds)),
                          ntimes = integer(length(seeds)),
                          avgtime = numeric(length(seeds)))
   
-  cat("Top\tnAttr\tSeed\tTrain\tTest\tnTimes\tAvgTime\n")
+  cat("Top\tnDEGs\tSeed\tTrain\tTest\tnTimes\tAvgTime\n")
   
   r <- 1
   for(s in seeds) {

@@ -21,15 +21,8 @@ df.exp.tr <- as.data.frame(t(df.exp))
 df.exp.tr <- cbind(Group = df.states[,"Disease_State"], df.exp.tr)
 df.grouped <- GroupByDiseaseStates(df.exp)
 list.fc <- GetListFc(df.grouped)
-###################################################################
 
-# df.result.success <- GetSuccessRates(
-#   df.exp, 
-#   list.fc, 
-#   type = "TOP", 
-#   tool = "c50", 
-#   seed.val = 1000
-# )
+######## STATS ##########
 
 df.result.size <- GetSizeSuccess(
   df = df.exp,
@@ -47,14 +40,35 @@ df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 70, verbose
 df.splitting.attrs <- GetDfSplittingAttrs(df.deg, verbose = 1)
 df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
 
-df.result.seed <- GetSeedSuccess(
-  df.splitting.attrs, 
+df.result.seed.deg <- GetSeedSuccess(
+  df.deg,
   tool = "c50", 
   list.fc = list.fc, 
-  n.times = 10, 
-  seeds = c(1000,2000,3000,4000,5000,6000,7000,8000,9000),
+  n.times = 1, 
+  seeds = c(3000:3020),
   cut = NULL, 
   top = NULL, 
   verbose = 1
 )
 
+df.result.seed.exp <- GetSeedSuccess(
+  df.exp.tr,
+  tool = "c50", 
+  list.fc = list.fc, 
+  n.times = 1, 
+  seeds = c(3000:3020),
+  cut = NULL, 
+  top = NULL, 
+  verbose = 1
+)
+
+df.result.seed.comb <- cbind(
+  df.result.seed.exp[, c(3,4,5,7)],
+  df.result.seed.deg[, c(4,5,7)])
+colnames(df.result.seed.comb)[2] <- "train.all"
+colnames(df.result.seed.comb)[3] <- "test.all"
+colnames(df.result.seed.comb)[4] <- "time.all"
+colnames(df.result.seed.comb)[5] <- "train.70"
+colnames(df.result.seed.comb)[6] <- "test.70"
+colnames(df.result.seed.comb)[7] <- "time.70"
+write.csv(df.result.seed.comb, file = "24283vs70.csv")

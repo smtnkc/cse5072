@@ -3,6 +3,8 @@ library(tidyr)
 
 palette <- c("#12a8e5", "#23366a", "#f44a26", "#e4c19f", "#747A74")
 
+df.result.seed.comb  <- as.data.frame(read_csv("../RESULTS/24283vs70.csv"))
+
 # Class Histogram
 ggplot(df.states, aes(x=Disease_State)) +
   geom_bar(fill = palette) +
@@ -59,6 +61,21 @@ ggplot(df.result.seed.comb, aes(seed)) +
   labs(color="Sample", x = "Seed", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
+
+# 23283 vs 70 vs 5
+ggplot(df.result.seed.comb, aes(seed)) +
+  #ggtitle("Accuracy over 24283 vs 70 vs 5 genes") +
+  #geom_line(aes(y = train.all, color = "train.all"), size = 0.5, show.legend=TRUE) +
+  #geom_line(aes(y = train.70, color = "train.70"), size = 0.5, show.legend=TRUE) +
+  #geom_line(aes(y = train.split, color = "train.split"), size = 0.5, show.legend=TRUE) +
+  geom_line(aes(y = test.all, color = "test.all"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = test.70, color = "test.70"), size = 1, show.legend=TRUE) +
+  geom_line(aes(y = test.split, color = "test.split"), size = 1, show.legend=TRUE) +
+  scale_color_manual(labels=c("test.70", "test.all", "test.split"),
+                              #,"train.split", "train.70", "train.all"), 
+                     values=palette[c(1,2,3)]) +
+  labs(color="Sample", x = "Seed", y = "Success %") +
+  theme(axis.line = element_line(color = "black"))
 
 
 

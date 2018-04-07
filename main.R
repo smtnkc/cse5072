@@ -37,8 +37,6 @@ df.result.size <- GetSizeSuccess(
 )
 
 df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 70, verbose = 2)
-df.splitting.attrs <- GetDfSplittingAttrs(df.deg, verbose = 1)
-df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
 
 df.result.seed.deg <- GetSeedSuccess(
   df.deg,
@@ -71,4 +69,29 @@ colnames(df.result.seed.comb)[4] <- "time.all"
 colnames(df.result.seed.comb)[5] <- "train.70"
 colnames(df.result.seed.comb)[6] <- "test.70"
 colnames(df.result.seed.comb)[7] <- "time.70"
-write.csv(df.result.seed.comb, file = "24283vs70.csv")
+write.csv(df.result.seed.comb, file = "../RESULTS/24283vs70.csv", row.names = FALSE)
+
+
+
+df.splitting.attrs <- GetDfSplittingAttrs(df.deg, verbose = 1)
+df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
+df.result.seed.split <- GetSeedSuccess(
+  df.splitting.attrs,
+  tool = "c50", 
+  list.fc = list.fc, 
+  n.times = 1, 
+  seeds = c(3000:3020),
+  cut = NULL, 
+  top = NULL, 
+  verbose = 1
+)
+
+df.result.seed.comb  <- as.data.frame(read_csv("../RESULTS/24283vs70.csv"))
+df.result.seed.comb <- cbind(
+  df.result.seed.comb,
+  df.result.seed.split[, c(4,5,7)])
+
+colnames(df.result.seed.comb)[8] <- "train.split"
+colnames(df.result.seed.comb)[9] <- "test.split"
+colnames(df.result.seed.comb)[10] <- "time.split"
+write.csv(df.result.seed.comb, file = "../RESULTS/24283vs70.csv", row.names = FALSE)

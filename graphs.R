@@ -25,3 +25,15 @@ ggplot(df.stats, aes(n)) +
   geom_smooth(aes(y = time), method = "loess") +
   labs(x = "Number of genes", y = "Execution Time (sec)") +
   xlim(c(0, 25000))
+
+
+# Results
+ggplot(df.result.size, aes(top)) +
+  ggtitle("Average results for 100 different sampling where seed = [5000:5099]") +
+  geom_smooth(aes(y = test, color = "test"), show.legend=TRUE, method = 'loess') +
+  geom_smooth(aes(y = train, color = "train"), show.legend=TRUE, method = 'loess') +
+  scale_color_manual(labels=c("Test", "Train"), values=palette[1:2]) +
+  labs(color="Sample", x = "Number of genes", y = "Success %") +
+  theme(axis.line = element_line(color = "black"))
+
+

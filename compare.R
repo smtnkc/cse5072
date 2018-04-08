@@ -30,7 +30,7 @@ df.seed.deg.c50 <- GetSeedSuccess(
   df.deg,
   tool = "c50", 
   list.fc = list.fc, 
-  n.times = 50, 
+  n.times = 100, 
   seeds = c(1000,2000,3000,4000,5000,6000,7000,8000,9000,10000),
   cut = NULL, 
   top = NULL,
@@ -42,7 +42,7 @@ df.seed.deg.svm <- GetSeedSuccess(
   df.deg,
   tool = "svm", 
   list.fc = list.fc, 
-  n.times = 50, 
+  n.times = 100, 
   seeds = c(1000,2000,3000,4000,5000,6000,7000,8000,9000,10000),
   cut = NULL, 
   top = NULL,
@@ -54,7 +54,7 @@ df.seed.deg.rf <- GetSeedSuccess(
   df.deg,
   tool = "rf", 
   list.fc = list.fc, 
-  n.times = 50, 
+  n.times = 100, 
   seeds = c(1000,2000,3000,4000,5000,6000,7000,8000,9000,10000),
   cut = NULL, 
   top = NULL,
@@ -62,9 +62,9 @@ df.seed.deg.rf <- GetSeedSuccess(
   verbose = 1
 )
 #write.csv(df.seed.all.c50, file = "../RESULTS/C50_all_tn10.csv", row.names = FALSE)
-#write.csv(df.seed.deg.c50, file = "../RESULTS/C50_deg560_tn10.csv", row.names = FALSE)
-#write.csv(df.seed.deg.svm, file = "../RESULTS/SVM_deg560_tn10.csv", row.names = FALSE)
-#write.csv(df.seed.deg.rf, file = "../RESULTS/RF_deg560_tn10.csv", row.names = FALSE)
+#write.csv(df.seed.deg.c50, file = "../RESULTS/C50_deg560_tn100.csv", row.names = FALSE)
+#write.csv(df.seed.deg.svm, file = "../RESULTS/SVM_deg560_tn100.csv", row.names = FALSE)
+#write.csv(df.seed.deg.rf, file = "../RESULTS/RF_deg560_tn100.csv", row.names = FALSE)
 
 
 

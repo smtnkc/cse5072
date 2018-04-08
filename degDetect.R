@@ -51,7 +51,7 @@ GetDegNames <- function(df, cut, top) {
   return(v.deg.names)
 }
 
-GetDfDeg <- function(df, list.fc, cut, top, verbose) {
+GetDfDeg <- function(df, list.fc, cut, top, class.type, verbose) {
   v.combined.deg.names <- c()
   
   for(i in 1:length(list.fc)) {
@@ -71,7 +71,12 @@ GetDfDeg <- function(df, list.fc, cut, top, verbose) {
   }
 
   df.deg <- as.data.frame(t(df[v.unique.deg.names,]))
-  df.deg <- cbind(Group = df.states[,"Disease_State"], df.deg)
+  if(class.type == "num")
+    df.deg <- cbind(Group = df.states[,"Group"], df.deg)
+  else if(class.type == "char")
+    df.deg <- cbind(Group = df.states[,"Disease_State"], df.deg)
+  
+  df.deg$Group <- factor(df.deg$Group)
   
   return (df.deg)
 }

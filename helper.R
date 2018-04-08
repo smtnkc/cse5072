@@ -10,7 +10,7 @@ GetTestSample <- function(seed.val) {
 }
 
 # Returns a simple df which includes only the genes those are splitting attrs
-GetDfSplittingAttrs <- function(df, verbose) {
+GetDfSplittingAttrs <- function(df, class.type, verbose) {
   
   df.deg <- df
   time.begin <- Sys.time()
@@ -34,7 +34,16 @@ GetDfSplittingAttrs <- function(df, verbose) {
     cat("Time (sec):", time.end - time.begin, "\n")
   }
   
-  return (df.deg[, v.splitting.attrs])
+  df.splitting.attrs <- df.deg[, v.splitting.attrs]
+  
+  if(class.type == "num")
+    df.splitting.attrs <- cbind(Group = df.states[,"Group"], df.splitting.attrs)
+  else if(class.type == "char")
+    df.splitting.attrs <- cbind(Group = df.states[,"Disease_State"], df.splitting.attrs)
+  
+  df.splitting.attrs$Group <- factor(df.splitting.attrs$Group)
+  
+  return (df.splitting.attrs)
 }
 
 # Returns a vector of success ratios for a model on train and test samples
@@ -48,6 +57,8 @@ TT <- function(df, tool, seed.val, verbose) {
     model <- C5.0(df.train[, -1], df.train[, 1])
   else if(tool == "svm") 
     model <- svm(df.train$Group~., df.train)
+  else if(tool == "rf")
+    model <- randomForest(df.train$Group~., df.train)
   
   pred.train <- predict(model, df.train[, -1])
   tab.train <- table(pred.train, df.train[,1])
@@ -72,12 +83,12 @@ TT <- function(df, tool, seed.val, verbose) {
 
 # Runs TT function n-times for different seed values starting from seed.begin
 # Returns a vector of stats (avg success and exec time of N iterations)
-TTRunner <- function(df, cut, top, list.fc, tool, seed.begin, n.times, verbose) {
+TTRunner <- function(df, cut, top, list.fc, tool, seed.begin, n.times, class.type, verbose) {
   
   if(is.null(cut) && is.null(top))
     df.deg <- df
   else
-    df.deg <- GetDfDeg(df, list.fc, cut, top, verbose)
+    df.deg <- GetDfDeg(df, list.fc, cut, top, class.type, verbose)
   
   train.sum <- 0
   test.sum <- 0
@@ -113,8 +124,9 @@ TTRunner <- function(df, cut, top, list.fc, tool, seed.begin, n.times, verbose) 
 
 # Runs TTRunner n-times for different num of genes (top-n or cut-k DEGs)
 # Returns a df of various stats
-GetSizeSuccess <- function(df, list.fc, tool, type, seed.begin, n.times, range, verbose) {
+GetSizeSuccess <- function(df, list.fc, tool, type, seed.begin, n.times, range, class.type, verbose) {
   
+  cat("TOOL:", tool,"\n")
   df.result <- data.frame(top = integer(length(range)),
                           degs = integer(length(range)),
                           seed = integer(length(range)),
@@ -127,11 +139,11 @@ GetSizeSuccess <- function(df, list.fc, tool, type, seed.begin, n.times, range, 
   r = 1
   for(n in range) {
     if(type == "top")
-      v.result <- TTRunner(df, cut = NULL, n, list.fc, 
-                           tool = "c50", seed.begin, n.times, verbose)
+      v.result <- TTRunner(df, cut = NULL, n, list.fc, tool, 
+                           seed.begin, n.times, class.type, verbose)
     else if (type == "cut")
-      v.result <- TTRunner(df, n, top = NULL, list.fc, 
-                           tool = "c50", seed.begin, n.times, verbose)
+      v.result <- TTRunner(df, n, top = NULL, list.fc, tool, 
+                           seed.begin, n.times, class.type, verbose)
     
     for(c in c(1:ncol(df.result))) {
       df.result[r,c] <- v.result[c]
@@ -147,7 +159,7 @@ GetSizeSuccess <- function(df, list.fc, tool, type, seed.begin, n.times, range, 
 
 # Runs TTRunner n-times for different seed.begin values
 # Returns a df of various stats
-GetSeedSuccess <- function(df, list.fc, n.times, tool, seeds, cut, top, verbose) {
+GetSeedSuccess <- function(df, list.fc, n.times, tool, seeds, cut, top, class.type, verbose) {
 
   df.stats <- data.frame(top = integer(length(seeds)),
                          degs = integer(length(seeds)),
@@ -161,8 +173,8 @@ GetSeedSuccess <- function(df, list.fc, n.times, tool, seeds, cut, top, verbose)
   
   r <- 1
   for(s in seeds) {
-    v.result <- TTRunner(df, cut, top, list.fc, tool, 
-                         seed.begin = s, n.times, verbose)
+    v.result <- TTRunner(df, cut, top, list.fc, tool, seed.begin = s, 
+                         n.times, class.type, verbose)
     
     for(c in c(1:ncol(df.stats))) {
       df.stats[r,c] <- v.result[c]

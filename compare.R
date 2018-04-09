@@ -1,5 +1,5 @@
+#### ALL SEED SUCCESS ####
 
-############## ALL SEED SUCCESS ###########################
 df.seed.all.c50 <- GetSeedSuccess(
   df.exp.tr,
   tool = "c50", 
@@ -11,7 +11,8 @@ df.seed.all.c50 <- GetSeedSuccess(
   class.type = "char",
   verbose = 1)
 
-############## DEG SEED SUCCESS ##########################
+#### DEG SEED SUCCESS ####
+
 df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 120, class.type = "char", verbose = 2)
 
 df.seed.all.c50 <- GetSeedSuccess(
@@ -23,8 +24,7 @@ df.seed.all.c50 <- GetSeedSuccess(
   cut = NULL, 
   top = NULL,
   class.type = "char",
-  verbose = 1
-)
+  verbose = 1)
 
 df.seed.deg.c50 <- GetSeedSuccess(
   df.deg,
@@ -35,8 +35,7 @@ df.seed.deg.c50 <- GetSeedSuccess(
   cut = NULL, 
   top = NULL,
   class.type = "char",
-  verbose = 1
-)
+  verbose = 1)
 
 df.seed.deg.svm <- GetSeedSuccess(
   df.deg,
@@ -47,8 +46,7 @@ df.seed.deg.svm <- GetSeedSuccess(
   cut = NULL, 
   top = NULL,
   class.type = "char",
-  verbose = 1
-)
+  verbose = 1)
 
 df.seed.deg.rf <- GetSeedSuccess(
   df.deg,
@@ -59,22 +57,19 @@ df.seed.deg.rf <- GetSeedSuccess(
   cut = NULL, 
   top = NULL,
   class.type = "char",
-  verbose = 1
-)
-#write.csv(df.seed.all.c50, file = "../RESULTS/C50_all_tn10.csv", row.names = FALSE)
-#write.csv(df.seed.deg.c50, file = "../RESULTS/C50_deg560_tn100.csv", row.names = FALSE)
-#write.csv(df.seed.deg.svm, file = "../RESULTS/SVM_deg560_tn100.csv", row.names = FALSE)
-#write.csv(df.seed.deg.rf, file = "../RESULTS/RF_deg560_tn100.csv", row.names = FALSE)
+  verbose = 1)
 
+# write.csv(df.seed.all.c50, file = "stats/C50_all_tn10.csv", row.names = FALSE)
+# write.csv(df.seed.deg.c50, file = "stats/C50_deg560_tn100.csv", row.names = FALSE)
+# write.csv(df.seed.deg.svm, file = "stats/SVM_deg560_tn100.csv", row.names = FALSE)
+# write.csv(df.seed.deg.rf, file = "stats/RF_deg560_tn100.csv", row.names = FALSE)
 
+#### SPLITTING SEED SUCCESS ####
 
-
-
-
-############## SPLITTING SEED SUCCESS ###########################
 df.splitting.attrs <- GetDfSplittingAttrs(df.deg, class.type = "char", verbose = 1)
- df.splitting.attrs <- GetDfSplittingAttrs(df.exp.tr, class.type = "num", verbose = 1)
- plot(C5.0(df.splitting.attrs[, -1], df.splitting.attrs[, 1]))
+df.splitting.attrs <- GetDfSplittingAttrs(df.exp.tr, class.type = "num", verbose = 1)
+plot(C5.0(df.splitting.attrs[, -1], df.splitting.attrs[, 1]))
+
 df.result.seed.split <- GetSeedSuccess(
   df.splitting.attrs,
   tool = "c50", 
@@ -85,19 +80,20 @@ df.result.seed.split <- GetSeedSuccess(
   top = NULL,
   class.type = "char",
   verbose = 1)
-df.result.seed.comb  <- as.data.frame(read_csv("../RESULTS/24283vs70.csv"))
+
+df.result.seed.comb  <- as.data.frame(read_csv("stats/24283vs70.csv"))
+
 df.result.seed.comb <- cbind(
   df.result.seed.comb,
   df.result.seed.split[, c(4,5,7)])
+
 colnames(df.result.seed.comb)[8] <- "train.split"
 colnames(df.result.seed.comb)[9] <- "test.split"
 colnames(df.result.seed.comb)[10] <- "time.split"
-write.csv(df.result.seed.comb, file = "../RESULTS/24283vs70.csv", row.names = FALSE)
 
+# write.csv(df.result.seed.comb, file = "stats/24283vs70.csv", row.names = FALSE)
 
-
-
-############## COMPARE C50-SVM-RF ###############
+#### COMPARE C50-SVM-RF ####
 
 df.result.size.c50 <- GetSizeSuccess(
   df = df.exp,
@@ -110,7 +106,7 @@ df.result.size.c50 <- GetSizeSuccess(
   class.type = "char",
   verbose = 1)
 
-# write.csv(df.result.size.c50, file = "../RESULTS/C50_tn100_sb5000.csv", row.names = FALSE)
+# write.csv(df.result.size.c50, file = "stats/C50_tn100_sb5000.csv", row.names = FALSE)
 
 df.result.size.svm <- GetSizeSuccess(
   df = df.exp,
@@ -123,7 +119,7 @@ df.result.size.svm <- GetSizeSuccess(
   class.type = "char",
   verbose = 1)
 
-#write.csv(df.result.size.svm, file = "../RESULTS/SVM_tn100_sb5000.csv", row.names = FALSE)
+# write.csv(df.result.size.svm, file = "stats/SVM_tn100_sb5000.csv", row.names = FALSE)
 
 df.result.size.rf <- GetSizeSuccess(
   df = df.exp,
@@ -136,7 +132,7 @@ df.result.size.rf <- GetSizeSuccess(
   class.type = "char",
   verbose = 1)
 
-# write.csv(df.result.size.rf, file = "../RESULTS/RF_tn10_sb5000.csv", row.names = FALSE)
+# write.csv(df.result.size.rf, file = "stats/RF_tn10_sb5000.csv", row.names = FALSE)
 
 df.result.time <- as.data.frame(cbind(
   top = df.result.size.c50[,"top"], 
@@ -145,4 +141,4 @@ df.result.time <- as.data.frame(cbind(
   time.svm = df.result.size.svm[,"avgtime"], 
   time.rf = df.result.size.rf[,"avgtime"]))
 
-write.csv(df.result.time, file = "../RESULTS/C50_RF_SVM.csv", row.names = FALSE)
+# write.csv(df.result.time, file = "stats/C50_RF_SVM.csv", row.names = FALSE)

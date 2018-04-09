@@ -1,4 +1,4 @@
-##################### Class Histogram #####################
+#### Class Histogram ####
 
 ggplot(df.states, aes(x=Disease_State)) +
   geom_bar(fill = palette) +
@@ -6,7 +6,7 @@ ggplot(df.states, aes(x=Disease_State)) +
   theme(panel.grid.minor = element_blank()) +
   labs(x = "Disease State", y = "Count") 
 
-##################### Data Distribution #####################
+#### Data Distribution ####
 
 df.grouped.long <- gather(df.grouped)
 colnames(df.grouped.long)[1] <- "Disease State"
@@ -18,16 +18,16 @@ ggplot(df.grouped.long, aes(x = value, color = `Disease State`)) +
   theme(axis.line = element_line(color = "black")) +
   labs(x = "Gene Expression", y = "Count") 
 
-##################### C50 SIZE/TIME #####################
+#### C50 SIZE/TIME ####
 
 ggplot(df.result.size.c50, aes(degs)) + 
   geom_smooth(aes(y = avgtime), size = 1, method = "loess") +
   labs(x = "Number of genes", y = "Execution Time (sec)") +
   xlim(c(0, 25000))
 
-##################### C50 ACCURACY/SIZE #####################
+#### C50 ACCURACY/SIZE ####
 
-df.temp  <- as.data.frame(read_csv("../RESULTS/C50_tn100_sb5000.csv"))
+df.temp  <- as.data.frame(read_csv("stats/C50_tn100_sb5000.csv"))
 ggplot(df.temp, aes(top)) +
   ggtitle("Average accuracy of C50 where seed values are in [5000:5099]") +
   geom_smooth(aes(y = test, color = "test"), size = 1, show.legend=TRUE, method = 'loess') +
@@ -36,11 +36,11 @@ ggplot(df.temp, aes(top)) +
   labs(color="Sample", x = "N value for DegDetect", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 vs SVM vs RF ACCURACY/SIZE #####################
+#### C50 vs SVM vs RF ACCURACY/SIZE ####
 
-df.c50 <- as.data.frame(read_csv("../RESULTS/C50_tn100_sb5000.csv"))
-df.svm <- as.data.frame(read_csv("../RESULTS/SVM_tn100_sb5000.csv"))
-df.rf <- as.data.frame(read_csv("../RESULTS/RF_tn10_sb5000.csv"))
+df.c50 <- as.data.frame(read_csv("stats/C50_tn100_sb5000.csv"))
+df.svm <- as.data.frame(read_csv("stats/SVM_tn100_sb5000.csv"))
+df.rf <- as.data.frame(read_csv("stats/RF_tn10_sb5000.csv"))
 ggplot(df.c50, aes(top)) +
   ggtitle("Average accuracy of C50 vs SVM vs RF where seed values are in [5000:5099]") +
   geom_smooth(aes(y = df.c50$test, color = "C50"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
@@ -51,39 +51,37 @@ ggplot(df.c50, aes(top)) +
   labs(color="TOOL", x = "N value for DegDetect", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 vs SVM vs RF ACCURACY/SEED FOR 560 DEGs ##################### 
+#### C50 vs SVM vs RF ACCURACY/SEED FOR 560 DEGs #### 
 
-df.c50 <- as.data.frame(read_csv("../RESULTS/C50_deg560_tn100.csv"))
-df.svm <- as.data.frame(read_csv("../RESULTS/SVM_deg560_tn100.csv"))
-df.rf <- as.data.frame(read_csv("../RESULTS/RF_deg560_tn100.csv"))
+df.c50 <- as.data.frame(read_csv("stats/C50_deg560_tn100.csv"))
+df.svm <- as.data.frame(read_csv("stats/SVM_deg560_tn100.csv"))
+df.rf <- as.data.frame(read_csv("stats/RF_deg560_tn100.csv"))
 ggplot(df.c50, aes(seed)) +
   ggtitle("Average test accuracy of C50 vs SVM vs RF for 560 DEGs (1000 Execution)") +
   geom_line(aes(y = df.c50$test, color = "C50"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   geom_line(aes(y = df.rf$test, color = "RF"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   geom_line(aes(y = df.svm$test, color = "SVM"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   scale_color_manual(labels=c("C50", "RF", "SVM"), values=palette[c(1,2,3)]) +
-  #scale_x_continuous(breaks = c(0,100,200,300,400,500,600,700,800,900,1000)) +
   labs(color="TOOL", x = "Seed Begin", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 vs SVM vs RF TIME/SEED FOR 560 DEGs ##################### 
+#### C50 vs SVM vs RF TIME/SEED FOR 560 DEGs #### 
 
-df.c50 <- as.data.frame(read_csv("../RESULTS/C50_deg560_tn100.csv"))
-df.svm <- as.data.frame(read_csv("../RESULTS/SVM_deg560_tn100.csv"))
-df.rf <- as.data.frame(read_csv("../RESULTS/RF_deg560_tn100.csv"))
+df.c50 <- as.data.frame(read_csv("stats/C50_deg560_tn100.csv"))
+df.svm <- as.data.frame(read_csv("stats/SVM_deg560_tn100.csv"))
+df.rf <- as.data.frame(read_csv("stats/RF_deg560_tn100.csv"))
 ggplot(df.c50, aes(seed)) +
   ggtitle("Average execution time of C50 vs SVM vs RF for 560 DEGs (1000 Execution)") +
   geom_line(aes(y = df.c50$avgtime, color = "C50"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   geom_line(aes(y = df.rf$avgtime, color = "RF"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   geom_line(aes(y = df.svm$avgtime, color = "SVM"), size = 1, show.legend=TRUE, method = 'loess', se = FALSE) +
   scale_color_manual(labels=c("C50", "RF", "SVM"), values=palette[c(1,2,3)]) +
-  #scale_x_continuous(breaks = c(0,100,200,300,400,500,600,700,800,900,1000)) +
   labs(color="TOOL", x = "Seed Begin", y = "Avg. Execution Time (sec)") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 23283 ACCURACY/SEED ##################### 
+#### C50 23283 ACCURACY/SEED #### 
 
-df.all <- as.data.frame(read_csv("../RESULTS/C50_all_tn10.csv"))
+df.all <- as.data.frame(read_csv("stats/C50_all_tn10.csv"))
 ggplot(df.all, aes(seed)) +
   ggtitle("Accuracy of C50 over 24283 genes (without DegDetect)") +
   geom_line(aes(y = df.all$train, color = "train.all"), size = 1, show.legend=TRUE) +
@@ -92,10 +90,10 @@ ggplot(df.all, aes(seed)) +
   labs(color="Sample", x = "Seed", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 23283 vs 560 DEGs ACCURACY/SEED ##################### 
+#### C50 23283 vs 560 DEGs ACCURACY/SEED #### 
 
-df.c50 <- as.data.frame(read_csv("../RESULTS/C50_deg560_tn100.csv"))
-df.all <- as.data.frame(read_csv("../RESULTS/C50_all_tn10.csv"))
+df.c50 <- as.data.frame(read_csv("stats/C50_deg560_tn100.csv"))
+df.all <- as.data.frame(read_csv("stats/C50_all_tn10.csv"))
 ggplot(df.c50, aes(seed)) +
   ggtitle("Average accuracy of C50 over 24283 genes vs TOP-120 cut") +
   geom_line(aes(y = df.all$train, color = "train.all"), size = 1, show.legend=TRUE) +
@@ -107,7 +105,7 @@ ggplot(df.c50, aes(seed)) +
   labs(color="Sample", x = "Seed", y = "Success %") +
   theme(axis.line = element_line(color = "black"))
 
-##################### C50 vs SVM vs RF TIME/SIZE ##################### 
+#### C50 vs SVM vs RF TIME/SIZE #### 
 
 ggplot(df.result.time, aes(degs)) +
   ggtitle("Average time to create a model with C50 vs SVM vs RF") +
@@ -119,12 +117,12 @@ ggplot(df.result.time, aes(degs)) +
   labs(color="Tool", x = "Number of Genes", y = "Execution Time (sec)") +
   theme(axis.line = element_line(color = "black"))
 
-##################### SCATTER of SUCCESS ##################### 
+#### SCATTER of SUCCESS #### 
 
-df.c50 <- as.data.frame(read_csv("../RESULTS/C50_deg560_tn100.csv"))
-df.svm <- as.data.frame(read_csv("../RESULTS/SVM_deg560_tn100.csv"))
-df.rf <- as.data.frame(read_csv("../RESULTS/RF_deg560_tn100.csv"))
-df.all <- as.data.frame(read_csv("../RESULTS/C50_all_tn10.csv"))
+df.c50 <- as.data.frame(read_csv("stats/C50_deg560_tn100.csv"))
+df.svm <- as.data.frame(read_csv("stats/SVM_deg560_tn100.csv"))
+df.rf <- as.data.frame(read_csv("stats/RF_deg560_tn100.csv"))
+df.all <- as.data.frame(read_csv("stats/C50_all_tn10.csv"))
 ggplot() +
   geom_point(aes(x=mean(df.rf$train), y=mean(df.rf$test), color = "RF.560"), size=3) +
   geom_point(aes(x=mean(df.all$train), y=mean(df.all$test), color = "C50.ALL"), size=3) +

@@ -1,4 +1,4 @@
-#### ALL SEED SUCCESS ####
+#### ALL ACCURACY/SEED ####
 
 df.seed.all.c50 <- GetSeedSuccess(
   df.exp.tr,
@@ -11,7 +11,7 @@ df.seed.all.c50 <- GetSeedSuccess(
   class.type = "char",
   verbose = 1)
 
-#### DEG SEED SUCCESS ####
+#### DEG ACCURACY/SEED ####
 
 df.deg <- GetDfDeg(df = df.exp, list.fc = list.fc, cut = NULL, top = 120, class.type = "char", verbose = 2)
 
@@ -64,7 +64,7 @@ df.seed.deg.rf <- GetSeedSuccess(
 # write.csv(df.seed.deg.svm, file = "stats/SVM_deg560_tn100.csv", row.names = FALSE)
 # write.csv(df.seed.deg.rf, file = "stats/RF_deg560_tn100.csv", row.names = FALSE)
 
-#### SPLITTING SEED SUCCESS ####
+#### SPLITTING ACCURACY/SEED ####
 
 df.splitting.attrs <- GetDfSplittingAttrs(df.deg, class.type = "char", verbose = 1)
 df.splitting.attrs <- GetDfSplittingAttrs(df.exp.tr, class.type = "num", verbose = 1)
